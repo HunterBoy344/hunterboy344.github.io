@@ -41,8 +41,25 @@
         launchQueue.setConsumer(async (launchParams) => {
           for (const file of launchParams.files) {
             JSZip.loadAsync(file).then(function (zip) {
-              zip.forEach(function (relativePath, file){
-                
+              zip.forEach(function (relativePath, zfile){
+                if (zfile.dir==false) {
+                  zfile.async("blob").then(function (blob) {
+                    let fileData = new File([blob], zfile.name);
+                    let response = new Response(fileData)
+                    caches.open("user-cache").then((cache) => {
+                    cache
+                      .put(relativePath,response)
+                      .then(() => console.log("Data added to cache."))
+                      .catch((error) => console.error("Error adding data to cache:", error));
+                    });
+                  });
+                  caches.open("user-cache").then((cache) => {
+                  cache
+                    .put(relativePath,response)
+                    .then(() => console.log("Data added to cache."))
+                    .catch((error) => console.error("Error adding data to cache:", error));
+                  });
+                }
               });
             });
           }
@@ -136,26 +153,6 @@
     }*/
 
     async function putFilesFromHandle(dirHandle, path) {
-      for await(let handle of dirHandle.values()){
-        if (handle.kind === "file") {
-          let fileData = await handle.getFile();
-          let response = new Response(fileData)
-          caches.open("user-cache").then((cache) => {
-            cache
-              .put(path+fileData.name,response)
-              .then(() => console.log("Data added to cache."))
-              .catch((error) => console.error("Error adding data to cache:", error));
-          });
-          if (fileData.name.endsWith(".html") && path=="/") {
-            filenameInput.add(new Option(fileData.name));
-          }
-        } else if (handle.kind === "directory") {
-          putFilesFromHandle(handle,path+handle.name+"/")
-        }
-      }
-    }
-
-    function putFilesFromZip(dirHandle, path) {
       for await(let handle of dirHandle.values()){
         if (handle.kind === "file") {
           let fileData = await handle.getFile();
