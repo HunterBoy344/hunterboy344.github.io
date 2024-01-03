@@ -40,12 +40,13 @@
       if ("launchQueue" in window) {
         launchQueue.setConsumer(async (launchParams) => {
           for (const file of launchParams.files) {
+            let fileObject = await file.getFile();
             let arrayBuffer;
             let fileReader = new FileReader();
             fileReader.onload = function(event) {
               arrayBuffer = event.target.result;
             };
-            fileReader.readAsArrayBuffer(file);
+            fileReader.readAsArrayBuffer(fileObject);
             JSZip.loadAsync(arrayBuffer).then(function (zip) {
               const numberOfCallbacks = Object.keys(zip.files).length - 1;
               let counter = 0;
