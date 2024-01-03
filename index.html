@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>HCHL</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+</head>
+
+<body>
+  Hunter's Cached HTML Launcher<br>
+  <button id="fileupload" onclick="getDir()">Select local directory</button>
+  <button id="clearcache" onclick="clearCacheAlert()">Clear cache</button>
+  <br>
+  <select id="filename" placeholder="Enter name of HTML file..."></select>
+  <button onclick="loadHTML()">Load!</button>
+  <br>
+  <code id="finished" style="display: none">Data loaded! Select an HTML file from the dropdown menu.</code>
+  <script src="jszip.min.js"></script>
+  <script>
+    
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(function() {
+          return navigator.serviceWorker.ready;
+      }).then(function(reg) {
+            console.log('Service Worker is ready', reg);
+          });
+    }
+
+    document.addEventListener("DOMContentLoaded", event => {
+      // we can move only if we are not in a browser's tab
+      isBrowser = matchMedia("(display-mode: browser)").matches;
+      if (!isBrowser) {
+        window.resizeTo(800, 600);
+      }
+      clearCache();
+      if ("launchQueue" in window) {
+        launchQueue.setConsumer(async (launchParams) => {
+          for (const file of launchParams.files) {
+            JSZip.loadAsync(file).then(function (zip) {
+              zip.forEach(function (relativePath, file){
+                
+              });
+            });
+          }
+        });
+      }
+    });
+    
+    var filenameInput = document.getElementById("filename");
+/*    document.getElementById("fileupload").onchange = function() {
+      let input = this.files[0];
+      if (input) {
+        var reader = new FileReader();
+        reader.readAsText(input, "UTF-8");
+        reader.onload = function (evt) {
+            document.open();
+            document.write(evt.target.result);
+            document.close();
+        }
+        reader.onerror = function (evt) {
+            document.open();
+            document.write('error reading file');
+            document.close();
+        }
+      }
+    }*/
+    async function getDir() {
+      clearCache()
+      removeOptions(filenameInput)
+      const dirHandle = await window.showDirectoryPicker();
+      // run code for dirHandle
+      putFilesFromHandle(dirHandle,"/")
+      /*for await(let handle of dirHandle.values()){
+        let fileData = await handle.getFile();
+        console.log('handle',handle);
+        console.log(fileData)
+        try {
+          navigator.serviceWorker.controller.postMessage(fileData);
+          if (fileData.name.endsWith(".html")) {
+            filenameInput.add(new Option(fileData.name));
+          }
+        } catch (error) {
+          alert("Try again after the page refreshes.")
+          location.reload()
+          break
+        }
+      }*/
+    }
+    async function clearCache() {
+      if ('serviceWorker' in navigator) {
+        caches.delete('user-cache')
+      }
+    }
+    async function clearCacheAlert() {
+      if ('serviceWorker' in navigator) {
+        caches.delete('user-cache')
+        location.reload()
+      }
+    }
+    async function removeOptions(selectElement) {
+      var i, L = selectElement.options.length - 1;
+      for(i = L; i >= 0; i--) {
+        selectElement.remove(i);
+      }
+    }
+
+    async function loadHTML() {
+      let value = filenameInput.value;
+      let HTMLToLoad = filenameInput.options[filenameInput.selectedIndex].text;
+      fetch(HTMLToLoad)
+        .then(response => response.text())
+        .then((response) => {
+          document.open()
+          document.write(response)
+          document.close()
+      })
+      .catch(err => console.log(err))
+    }
+    
+    /*async function* getFilesRecursively(entry) {
+      if (entry.kind === "file") {
+        const file = await entry.getFile();
+          if (file !== null) {
+            file.relativePath = getRelativePath(entry);
+            yield file;
+          }
+      } else if (entry.kind === "directory") {
+        for await (const handle of entry.values()) {
+          yield* getFilesRecursively(handle);
+        }
+      }
+    }*/
+
+    async function putFilesFromHandle(dirHandle, path) {
+      for await(let handle of dirHandle.values()){
+        if (handle.kind === "file") {
+          let fileData = await handle.getFile();
+          let response = new Response(fileData)
+          caches.open("user-cache").then((cache) => {
+            cache
+              .put(path+fileData.name,response)
+              .then(() => console.log("Data added to cache."))
+              .catch((error) => console.error("Error adding data to cache:", error));
+          });
+          if (fileData.name.endsWith(".html") && path=="/") {
+            filenameInput.add(new Option(fileData.name));
+          }
+        } else if (handle.kind === "directory") {
+          putFilesFromHandle(handle,path+handle.name+"/")
+        }
+      }
+    }
+
+    function putFilesFromZip(dirHandle, path) {
+      for await(let handle of dirHandle.values()){
+        if (handle.kind === "file") {
+          let fileData = await handle.getFile();
+          let response = new Response(fileData)
+          caches.open("user-cache").then((cache) => {
+            cache
+              .put(path+fileData.name,response)
+              .then(() => console.log("Data added to cache."))
+              .catch((error) => console.error("Error adding data to cache:", error));
+          });
+          if (fileData.name.endsWith(".html") && path=="/") {
+            filenameInput.add(new Option(fileData.name));
+          }
+        } else if (handle.kind === "directory") {
+          putFilesFromHandle(handle,path+handle.name+"/")
+        }
+      }
+    }
+
+
+
+    
+  </script>
+
+  <!--
+  This script places a badge on your repl's full-browser view back to your repl's cover
+  page. Try various colors for the theme: dark, light, red, orange, yellow, lime, green,
+  teal, blue, blurple, magenta, pink!
+  -->
+</body>
+
+</html>
