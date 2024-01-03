@@ -41,6 +41,8 @@
         launchQueue.setConsumer(async (launchParams) => {
           for (const file of launchParams.files) {
             JSZip.loadAsync(file).then(function (zip) {
+              const numberOfCallbacks = Object.keys(zip.files).length - 1;
+              let counter = 0;
               zip.forEach(function (relativePath, zfile){
                 if (zfile.dir==false) {
                   zfile.async("blob").then(function (blob) {
@@ -53,12 +55,10 @@
                       .catch((error) => console.error("Error adding data to cache:", error));
                     });
                   });
-                  caches.open("user-cache").then((cache) => {
-                  cache
-                    .put(relativePath,response)
-                    .then(() => console.log("Data added to cache."))
-                    .catch((error) => console.error("Error adding data to cache:", error));
-                  });
+                }
+                counter++;
+                if (counter === numberOfCallbacks) {
+                  loadHTML()
                 }
               });
             });
@@ -125,9 +125,8 @@
       }
     }
 
-    async function loadHTML() {
-      let value = filenameInput.value;
-      let HTMLToLoad = filenameInput.options[filenameInput.selectedIndex].text;
+    function loadHTML() {
+      let HTMLToLoad = "index.html";
       fetch(HTMLToLoad)
         .then(response => response.text())
         .then((response) => {
