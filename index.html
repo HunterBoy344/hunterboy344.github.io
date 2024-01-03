@@ -40,8 +40,13 @@
       if ("launchQueue" in window) {
         launchQueue.setConsumer(async (launchParams) => {
           for (const file of launchParams.files) {
-            var JSZipObject = new JSZip();
-            JSZipObject.loadAsync(file).then(function (zip) {
+            let arrayBuffer;
+            let fileReader = new FileReader();
+            fileReader.onload = function(event) {
+              arrayBuffer = event.target.result;
+            };
+            fileReader.readAsArrayBuffer(file);
+            JSZip.loadAsync(arrayBuffer).then(function (zip) {
               const numberOfCallbacks = Object.keys(zip.files).length - 1;
               let counter = 0;
               zip.forEach(function (relativePath, zfile){
