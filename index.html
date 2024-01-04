@@ -12,13 +12,7 @@
 
 <body>
   Hunter's Cached HTML Launcher<br>
-  <button id="fileupload" onclick="getDir()">Select local directory</button>
-  <button id="clearcache" onclick="clearCacheAlert()">Clear cache</button>
-  <br>
-  <select id="filename" placeholder="Enter name of HTML file..."></select>
-  <button onclick="loadHTML()">Load!</button>
-  <br>
-  <code id="finished" style="display: none">Data loaded! Select an HTML file from the dropdown menu.</code>
+  <p id="loading">Congrats on installing HCHL! This launcher doesn't do anything on its own; you need to open a ".hchl" file in your file manager to run a program.</p>
   <script src="jszip.min.js"></script>
   <script>
     
@@ -38,6 +32,7 @@
       }
       clearCache();
       if ("launchQueue" in window) {
+        document.getElementById("loading").innerHTML = "Loading..."
         launchQueue.setConsumer(async (launchParams) => {
           for (const file of launchParams.files) {
             let fileObject = await file.getFile();
