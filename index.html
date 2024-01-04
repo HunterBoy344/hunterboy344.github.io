@@ -48,7 +48,7 @@
             //};
             //fileReader.readAsArrayBuffer(fileObject);
             JSZip.loadAsync(fileObject).then(function (zip) {
-              const numberOfCallbacks = Object.keys(zip.files).length - 1;
+              const numberOfCallbacks = Object.keys(zip.files).length;
               let counter = 0;
               zip.forEach(function (relativePath, zfile){
                 if (zfile["dir"]==false) {
