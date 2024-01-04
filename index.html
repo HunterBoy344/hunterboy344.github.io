@@ -32,8 +32,10 @@
       }
       clearCache();
       if ("launchQueue" in window) {
-        document.getElementById("loading").innerHTML = "Loading..."
         launchQueue.setConsumer(async (launchParams) => {
+          if (launchParams.files.length>0) {
+            document.getElementById("loading").innerHTML = "Loading..."
+          }
           for (const file of launchParams.files) {
             let fileObject = await file.getFile();
             //let arrayBuffer;
