@@ -36,7 +36,7 @@ addEventListener("message", (event) => {
 
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
+    caches.match(event.request, {'ignoreSearch': true}).then((response) => {
       // caches.match() always resolves
       // but in case of success response will have value
       if (response !== undefined) {
