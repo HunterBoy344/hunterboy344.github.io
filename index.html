@@ -52,7 +52,7 @@
               let counter = 0;
               zip.forEach(function (relativePath, zfile){
                 if (zfile["dir"]===false) {
-                alert("not dir")
+                //alert("not dir")
                 zfile.async("blob").then(function success(content) {
                   let fileData = new File([content], zfile.name);
                   let response = new Response(fileData)
@@ -67,12 +67,12 @@
                   console.error("Error: "+e)
                 });
                 } else {
-                  alert("dir")
+                  //alert("dir")
                 }
                 counter++;
-                alert("Counter: "+counter+" Path "+relativePath)
+                //alert("Counter: "+counter+" Path "+relativePath)
                 if (counter === numberOfCallbacks) {
-                  alert("done")
+                  //alert("done")
                   loadHTML()
                 }
               });
