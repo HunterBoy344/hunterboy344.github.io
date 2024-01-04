@@ -59,7 +59,7 @@
                   console.log(fileData)
                   caches.open("user-cache").then((cache) => {
                     cache
-                      .put(relativePath,response)
+                      .put("/"+relativePath,response)
                       .then(() => console.log("Data added to cache."))
                       .catch((error) => console.error("Error adding data to cache:", error));
                   });
