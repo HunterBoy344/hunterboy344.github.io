@@ -13,14 +13,16 @@
 <body>
   Hunter's Cached HTML Launcher<br>
   <p id="loading">Congrats on installing HCHL! This launcher doesn't do anything on its own; you need to open a ".hchl" file in your file manager to run a program.</p>
+  <button id="update" onclick="updateLauncher()">Update launcher</button>
   <script src="jszip.min.js"></script>
   <script>
-    
+    let SWRegistration
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').then(function() {
           return navigator.serviceWorker.ready;
       }).then(function(reg) {
             console.log('Service Worker is ready', reg);
+            SWRegistration = reg;
           });
     }
 
@@ -201,21 +203,11 @@
       }
     }
 
-    const getFilesFromZip = async (zipFile) => {
-      const jsZip = JSZip();
-      const files = [];
-    
-      try {
-        const zip = await jsZip.loadAsync(zipFile);
-        for (let filename of Object.keys(zip.files)) {
-          const data = await zip.files[filename].async("string");
-          files.push(data)
-        }
-      } catch (error) {
-        throw error;
-      }
-      return files;
-    };
+    async function updateLauncher() {
+      caches.delete("pwa-assets");
+      SWRegistration.unregister()
+      window.location.href="/"
+    }
 
 
 
