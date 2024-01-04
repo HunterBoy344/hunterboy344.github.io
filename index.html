@@ -51,7 +51,8 @@
               const numberOfCallbacks = Object.keys(zip.files).length;
               let counter = 0;
               zip.forEach(function (relativePath, zfile){
-                if (zfile["dir"]==false) {
+                alert(zfile["dir"])
+                if (zfile["dir"]===false) {
                   alert("not dir")
                   zfile.async("blob").then(function (blob) {
                     let fileData = new File([blob], zfile.name);
