@@ -56,7 +56,7 @@
                 zfile.async("blob").then(function success(content) {
                   let fileData = new File([content], zfile.name);
                   let response = new Response(fileData)
-                  console.log(response)
+                  console.log(fileData)
                   caches.open("user-cache").then((cache) => {
                   cache
                     .put(relativePath,response)
