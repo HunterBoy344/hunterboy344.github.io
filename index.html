@@ -36,7 +36,7 @@
       if (!isBrowser) {
         window.resizeTo(800, 600);
       }
-      //clearCache();
+      clearCache();
       if ("launchQueue" in window) {
         launchQueue.setConsumer(async (launchParams) => {
           for (const file of launchParams.files) {
@@ -61,6 +61,11 @@
                       .then(() => console.log("Data added to cache."))
                       .catch((error) => console.error("Error adding data to cache:", error));
                   });
+                  counter++
+                  if (counter === numberOfCallbacks) {
+                    //alert("done")
+                    loadHTML()
+                  }
                 })
               })
               /*zip.forEach(function (relativePath, zfile){
