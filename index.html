@@ -51,10 +51,9 @@
               const numberOfCallbacks = Object.keys(zip.files).length;
               let counter = 0;
               zip.forEach(function (relativePath, zfile){
-                alert(zfile["dir"])
                 if (zfile["dir"]===false) {
                   alert("not dir")
-                  zfile.async("blob").then(function (blob) {
+                  JSZip.file(zfile.name).async("blob").then(function (blob) {
                     let fileData = new File([blob], zfile.name);
                     let response = new Response(fileData)
                     caches.open("user-cache").then((cache) => {
@@ -65,7 +64,7 @@
                     });
                   });
                 } else {
-                  alert("false")
+                  alert("dir")
                 }
                 counter++;
                 alert("Counter: "+counter+" Path "+relativePath)
