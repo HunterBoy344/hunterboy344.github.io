@@ -50,7 +50,20 @@
             JSZip.loadAsync(fileObject).then(function (zip) {
               const numberOfCallbacks = Object.keys(zip.files).length;
               let counter = 0;
-              zip.forEach(function (relativePath, zfile){
+              const promises = [];
+              Object.keys(zip.files).forEach(function (filename) {
+                zip.files[filename].async('blob').then(function (blob) {
+                  let fileData = new File([blob], /[^/]*$/.exec(filename)[0];);
+                  let response = new Response(fileData)
+                  caches.open("user-cache").then((cache) => {
+                    cache
+                      .put("/"+filename,response)
+                      .then(() => console.log("Data added to cache."))
+                      .catch((error) => console.error("Error adding data to cache:", error));
+                  });
+                })
+              })
+              /*zip.forEach(function (relativePath, zfile){
                 if (zfile["dir"]===false) {
                 //alert("not dir")
                 zfile.async("blob").then(function success(content) {
@@ -75,7 +88,7 @@
                   //alert("done")
                   loadHTML()
                 }
-              });
+              });*/
             });
           }
         });
@@ -185,6 +198,22 @@
         }
       }
     }
+
+    const getFilesFromZip = async (zipFile) => {
+      const jsZip = JSZip();
+      const files = [];
+    
+      try {
+        const zip = await jsZip.loadAsync(zipFile);
+        for (let filename of Object.keys(zip.files)) {
+          const data = await zip.files[filename].async("string");
+          files.push(data)
+        }
+      } catch (error) {
+        throw error;
+      }
+      return files;
+    };
 
 
 
