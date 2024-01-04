@@ -53,7 +53,7 @@
               zip.forEach(function (relativePath, zfile){
                 if (zfile["dir"]===false) {
                   alert("not dir")
-                  JSZip.file(zfile.name).async("blob").then(function (blob) {
+                 zip.file(zfile.name).async("blob").then(function (blob) {
                     let fileData = new File([blob], zfile.name);
                     let response = new Response(fileData)
                     caches.open("user-cache").then((cache) => {
