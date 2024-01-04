@@ -37,6 +37,7 @@
         launchQueue.setConsumer(async (launchParams) => {
           if (launchParams.files.length>0) {
             document.getElementById("loading").innerHTML = "Loading..."
+            document.getElementById("update").style.display = "none"
           }
           for (const file of launchParams.files) {
             let fileObject = await file.getFile();
