@@ -52,18 +52,20 @@
               let counter = 0;
               zip.forEach(function (relativePath, zfile){
                 if (zfile["dir"]===false) {
-                  alert("not dir")
-                 zip.file(zfile.name).async("blob").then(function (blob) {
-                    let fileData = new File([blob], zfile.name);
-                    let response = new Response(fileData)
-                    console.log(response)
-                    caches.open("user-cache").then((cache) => {
-                    cache
-                      .put(relativePath,response)
-                      .then(() => console.log("Data added to cache."))
-                      .catch((error) => console.error("Error adding data to cache:", error));
-                    });
+                alert("not dir")
+                zfile.async("blob").then(function success(content) {
+                  let fileData = new File([blob], zfile.name);
+                  let response = new Response(fileData)
+                  console.log(response)
+                  caches.open("user-cache").then((cache) => {
+                  cache
+                    .put(relativePath,response)
+                    .then(() => console.log("Data added to cache."))
+                    .catch((error) => console.error("Error adding data to cache:", error));
                   });
+                }, function error(e) {
+                  console.error("Error: "+e)
+                });
                 } else {
                   alert("dir")
                 }
