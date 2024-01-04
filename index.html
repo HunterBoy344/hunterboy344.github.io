@@ -53,7 +53,7 @@
               const promises = [];
               Object.keys(zip.files).forEach(function (filename) {
                 zip.files[filename].async('blob').then(function (blob) {
-                  let fileData = new File([blob], /[^/]*$/.exec(filename)[0];);
+                  let fileData = new File([blob], (/[^/]*$/.exec(filename)[0]));
                   let response = new Response(fileData)
                   caches.open("user-cache").then((cache) => {
                     cache
