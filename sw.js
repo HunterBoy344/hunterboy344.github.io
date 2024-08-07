@@ -3,6 +3,7 @@ let filesToCache = [
     "/",
     "/manifest.json",
     "/icon.png",
+    "/jszip.min.js",
 ];
 caches.open("pwa-assets")
 .then(cache => {
