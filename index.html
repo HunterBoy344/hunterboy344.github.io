@@ -32,7 +32,7 @@
       if (!isBrowser) {
         window.resizeTo(800, 600);
       }
-      await clearCache();
+      clearCache();
       if ("launchQueue" in window) {
         launchQueue.setConsumer(async (launchParams) => {
           if (launchParams.files.length>0) {
