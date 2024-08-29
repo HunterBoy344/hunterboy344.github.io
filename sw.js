@@ -35,16 +35,24 @@ addEventListener("message", (event) => {
   }
 });
 
-self.addEventListener("fetch", (event) => {
+self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches.match(event.request, {'ignoreSearch': true}).then((response) => {
-      // caches.match() always resolves
-      // but in case of success response will have value
-      if (response !== undefined) {
-        return response;
-      } else {
-        return fetch(event.request);
-      }
-    }),
+    caches.open(cache_name).then(function(cache) {
+      return cache.match(event.request, {'ignoreSearch': true}).then(function (response) {
+        if (response !== undefined) {
+          return response;
+        } else {
+          return caches.match(event.request, {'ignoreSearch': true}).then((response) => {
+            // caches.match() always resolves
+            // but in case of success response will have value
+            if (response !== undefined) {
+              return response;
+            } else {
+              return fetch(event.request);
+            }
+          })
+        }
+      });
+    })
   );
 });
